@@ -104,12 +104,12 @@ class Task():
                 offsets = output[3].cpu().numpy()[0]
 
                 #print(heatmaps.shape)
-                hm = cv2.resize(np.sum(heatmaps,axis=0),(192,192))*255
+                hm = cv2.resize(np.sum(heatmaps,axis=0),(256,256))*255
                 cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_heatmaps.jpg"),hm)
                 img[:,:,0]+=hm
                 cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_img.jpg"), img)
-                cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_center.jpg"),cv2.resize(centers[0]*255,(192,192)))
-                cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_regs0.jpg"),cv2.resize(regs[0]*255,(192,192)))
+                cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_center.jpg"),cv2.resize(centers[0]*255,(256,256)))
+                cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_regs0.jpg"),cv2.resize(regs[0]*255,(256,256)))
                 
 
 
@@ -203,10 +203,10 @@ class Task():
                     save_name = os.path.join(save_dir, basename)
 
 
-                    hm = cv2.resize(np.sum(output[0][0].cpu().numpy(),axis=0),(192,192))*255
+                    hm = cv2.resize(np.sum(output[0][0].cpu().numpy(),axis=0),(256,256))*255
                     cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_hm_pre.jpg"),hm)
 
-                    hm = cv2.resize(np.sum(labels[0,:7,:,:].cpu().numpy(),axis=0),(192,192))*255
+                    hm = cv2.resize(np.sum(labels[0,:7,:,:].cpu().numpy(),axis=0),(256,256))*255
                     cv2.imwrite(os.path.join(save_dir,basename[:-4]+"_hm_gt.jpg"),hm)
 
 

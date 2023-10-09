@@ -78,13 +78,17 @@ def main(img_dir, labels_path, output_name, output_img_dir):
     new_label = []
     for k,v in anno_by_imgname.items():
         #filter out more than 3 people
-        if len(v)>3:
+        if len(v)>1:
             continue
 
         # print(k)
         # print(v)
 
         img = cv2.imread(os.path.join(img_dir, k))
+        if img is None:  #只要影像不見，就無視它
+            # print(f"Skipping {k} because the image couldn't be read.")
+            continue
+
         h,w = img.shape[:2]
         for idx,item in enumerate(v):
             if item['iscrowd'] != 0:
@@ -264,16 +268,17 @@ if __name__ == '__main__':
     output_img_dir = "./data/cropped/imgs"
 
 
-    img_dir = "./data/val2017"
-    labels_path = "./data/annotations/person_keypoints_val2017.json"
+    img_dir = "D:/jupyter note/CenterNet-windows/data/coco/val2017"
+    labels_path = "D:/jupyter note/CenterNet-windows/data/coco/annotations/person_keypoints_val2017.json"
     output_name = './data/cropped/val2017.json'
+
     main(img_dir, labels_path, output_name, output_img_dir)
 
     
 
-    img_dir = "./data/train2017"
-    labels_path = "./data/annotations/person_keypoints_train2017.json"
-    output_name = './data/cropped/train2017.json'
+    # img_dir = "./data/train2017"
+    # labels_path = "./data/annotations/person_keypoints_train2017.json"
+    # output_name = './data/cropped/train2017.json'
     main(img_dir, labels_path, output_name, output_img_dir)
 
 

@@ -13,7 +13,7 @@ def gaussian2D(shape, sigma=1):
     h[h < np.finfo(h.dtype).eps * h.max()] = 0
     return h
 
-def generate_heatmap(x, y, size=(48,48), sigma=7):
+def generate_heatmap(x, y, size=(64,64), sigma=7):
     #heatmap, center, radius, k=1
     #centernet draw_umich_gaussian for not mse_loss
     k=1
@@ -44,16 +44,24 @@ def generate_heatmap(x, y, size=(48,48), sigma=7):
 
 def new_w():
     ratio = 0.01
-    weights = np.zeros((48,48))
+    weights = np.zeros((64,64))
     half_w = []
-    for i in range(24):
+    # for i in range(24):
+    #     half_w.append(1-i*ratio)
+    # line = np.array(half_w[::-1].copy()+half_w.copy())
+    # weights[23] = line.copy()
+    # weights[24] = line.copy()
+    # for i in range(1,24):
+    #     weights[23-i] = line.copy()-i*ratio
+    #     weights[24+i] = line.copy()-i*ratio
+    for i in range(32):
         half_w.append(1-i*ratio)
     line = np.array(half_w[::-1].copy()+half_w.copy())
-    weights[23] = line.copy()
-    weights[24] = line.copy()
-    for i in range(1,24):
-        weights[23-i] = line.copy()-i*ratio
-        weights[24+i] = line.copy()-i*ratio
+    weights[31] = line.copy()
+    weights[32] = line.copy()
+    for i in range(1,32):
+        weights[31-i] = line.copy()-i*ratio
+        weights[32+i] = line.copy()-i*ratio
 
     return weights
 
@@ -61,7 +69,9 @@ new_w = new_w()
 print(new_w[20:26,20:26])
 print(new_w[:6,0:6])
 cv2.imwrite("new_w.jpg", new_w*255)
-np.save("my_weight_center.npy", new_w)
+# np.save("my_weight_center.npy", new_w)
+np.save("center_weight_origin.npy", new_w)
+
 
 
 img = generate_heatmap(23,23)

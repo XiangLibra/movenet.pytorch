@@ -14,12 +14,12 @@ cfg = {
 
     "num_classes": 17,
     "width_mult":1.0,
-    "img_size": 192, 
+    "img_size": 256, 
     
 
     ##### Train Setting
     'img_path':"./data/cropped/imgs",
-    'train_label_path':'./data/cropped/train2017.json',
+    'train_label_path':'./data/cropped/val2017.json',
     'val_label_path':'./data/cropped/val2017.json',
     'balance_data':False,
 
@@ -31,7 +31,7 @@ cfg = {
 
     ##### Train Hyperparameters
     'learning_rate':0.001,#1.25e-4
-    'batch_size':64,
+    'batch_size':5,
     'epochs':120,
     'optimizer':'Adam',  #Adam  SGD
     'scheduler':'MultiStepLR-70,100-0.1', #default  SGDR-5-2  CVPR   step-4-0.8 MultiStepLR

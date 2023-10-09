@@ -85,7 +85,7 @@ def printDash(num = 50):
 #     return res
 
 
-_center_weight = np.load('lib/data/center_weight_origin.npy').reshape(48,48)
+_center_weight = np.load('lib/data/center_weight_origin.npy').reshape(64,64)
 # _center_weight = np.load("lib/data/my_weight_center.npy")
 
 def maxPoint(heatmap, center=True):

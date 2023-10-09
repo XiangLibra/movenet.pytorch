@@ -13,7 +13,7 @@ import torch.nn.functional as F
 import cv2
 
 
-_img_size = 192
+_img_size = 256
 _feature_map_size = _img_size//4
 
 _center_weight_path = 'lib/data/center_weight_origin.npy'
@@ -347,7 +347,9 @@ class MovenetLoss(torch.nn.Module):
 
 
         if not self.make_center_w:
-            self.center_weight = torch.reshape(self.center_weight,(1,1,48,48))
+            # self.center_weight = torch.reshape(self.center_weight,(1,1,48,48))
+            print(len(self.center_weight))
+            self.center_weight = torch.reshape(self.center_weight,(1,1,64,64))
             self.center_weight = self.center_weight.repeat((output[1].shape[0],output[1].shape[1],1,1))
             # print(self.center_weight.shape)
             # b

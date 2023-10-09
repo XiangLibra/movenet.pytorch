@@ -8,7 +8,7 @@ import numpy as np
 
 
 _center_weight = np.load('center_weight_origin.npy')
-_center_weight = np.reshape(_center_weight,(48,48))
+_center_weight = np.reshape(_center_weight,(64,64))
 print(_center_weight[0])
 
 _center_weight1 = _center_weight[:,::-1]

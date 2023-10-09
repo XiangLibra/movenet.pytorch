@@ -210,9 +210,9 @@ class Data():
                 offsets = labels[i,52:,:,:]
 
                 cv2.imwrite(os.path.join(show_path,basename+"_origin.jpg"), img)
-                cv2.imwrite(os.path.join(show_path,basename+"_centers.jpg"), cv2.resize(centers[0]*255, (192,192)))
+                cv2.imwrite(os.path.join(show_path,basename+"_centers.jpg"), cv2.resize(centers[0]*255, (256,256)))
                 heatmaps = np.sum(heatmaps,axis=0)
-                heatmaps = cv2.resize(heatmaps, (192,192))*255
+                heatmaps = cv2.resize(heatmaps, (256,256))*255
                 # cv2.imwrite(os.path.join(show_path,basename+"_heatmaps.jpg"), heatmaps)
                 cv2.imwrite(os.path.join(show_path,basename+"_regs0.jpg"), np.abs(regs[0])*255)
                 # cv2.imwrite(os.path.join(show_path,basename+"_offsets0.jpg"), offsets[0]*255)

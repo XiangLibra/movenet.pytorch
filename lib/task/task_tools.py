@@ -14,7 +14,7 @@ from lib.utils.utils import maxPoint,extract_keypoints
 
 
 
-_range_weight_x = np.array([[x for x in range(48)] for _ in range(48)])
+_range_weight_x = np.array([[x for x in range(64)] for _ in range(64)])
 _range_weight_y = _range_weight_x.T
 # _reg_weight = np.load("lib/data/my_weight_reg.npy") # 99x99
 
@@ -83,7 +83,7 @@ def clipGradient(optimizer, grad_clip=1):
 #     return 1/(1 + np.exp(-x))
 
 def movenetDecode(data, kps_mask=None,mode='output', num_joints = 17, 
-                img_size=192, hm_th=0.1):
+                img_size=256, hm_th=0.1):
     ##data [64, 7, 48, 48] [64, 1, 48, 48] [64, 14, 48, 48] [64, 14, 48, 48]
     #kps_mask [n, 7]
 
@@ -124,15 +124,15 @@ def movenetDecode(data, kps_mask=None,mode='output', num_joints = 17,
             reg_x = np.reshape(reg_x, (reg_x.shape[0],1,1))
             reg_y = np.reshape(reg_y, (reg_y.shape[0],1,1))
             # print(reg_x.shape,reg_x,reg_y)
-            reg_x = reg_x.repeat(48,1).repeat(48,2)
-            reg_y = reg_y.repeat(48,1).repeat(48,2)
+            reg_x = reg_x.repeat(64,1).repeat(64,2)
+            reg_y = reg_y.repeat(64,1).repeat(64,2)
             #print(reg_x.repeat(48,1).repeat(48,2).shape)
             #bb
 
 
             #### 根据center得到关键点回归位置，然后加权heatmap
-            range_weight_x = np.reshape(_range_weight_x,(1,48,48)).repeat(reg_x.shape[0],0)
-            range_weight_y = np.reshape(_range_weight_y,(1,48,48)).repeat(reg_x.shape[0],0)
+            range_weight_x = np.reshape(_range_weight_x,(1,64,64)).repeat(reg_x.shape[0],0)
+            range_weight_y = np.reshape(_range_weight_y,(1,64,64)).repeat(reg_x.shape[0],0)
             tmp_reg_x = (range_weight_x-reg_x)**2
             tmp_reg_y = (range_weight_y-reg_y)**2
             # print(tmp_reg_x.shape, _range_weight_x.shape, reg_x.shape)

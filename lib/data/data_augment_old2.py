@@ -527,7 +527,7 @@ def Affine(src,strength,pad_color,label=None):
 def AID(img, label):
     h,w = img.shape[:2]
 
-    half_size = int(random.uniform(20/192,36/192)*(h+w)/2)
+    half_size = int(random.uniform(20/256,36/256)*(h+w)/2)
 
 
     keypoints = np.array(label["keypoints"]).reshape((-1,3))
@@ -552,7 +552,7 @@ def AID(img, label):
 def AID2(img, label):
     h,w = img.shape[:2]
 
-    half_size = int(random.uniform(5/192,10/192)*(h+w)/2)
+    half_size = int(random.uniform(5/256,10/256)*(h+w)/2)
 
 
     keypoints = np.array(label["keypoints"]).reshape((-1,3))
