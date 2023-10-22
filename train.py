@@ -22,11 +22,13 @@ def main(cfg):
 
     data = Data(cfg)
     train_loader, val_loader = data.getTrainValDataloader()
+    
     # data.showData(train_loader)
     # b
 
 
     run_task = Task(cfg, model)
+    run_task.modelLoad("e970_valacc0.95294.pth")
     run_task.train(train_loader, val_loader)
 
 

@@ -235,7 +235,7 @@ class Task():
 
     def evaluate(self, data_loader):
         self.model.eval()
-
+        self.loss_func = MovenetLoss(use_target_weight=False)
         correct = 0
         total = 0
         with torch.no_grad():
@@ -254,6 +254,9 @@ class Task():
 
                 output = self.model(imgs)
 
+                heatmap_loss,bone_loss,center_loss,regs_loss,offset_loss = self.loss_func(output, labels, kps_mask)
+
+                total_loss = heatmap_loss+center_loss+regs_loss+offset_loss+bone_loss 
                 
                 pre = movenetDecode(output, kps_mask,mode='output')
                 gt = movenetDecode(labels, kps_mask,mode='label')
@@ -266,11 +269,32 @@ class Task():
 
         acc = correct/total
         print('[Info] acc: {:.3f}% \n'.format(100. * acc))
+        print('\r', 
+                        # '%d/%d '
+                        # '[%d/%d] '
+                        'loss: %.4f '
+                        '(hm_loss: %.3f '
+                        'b_loss: %.3f '
+                        'c_loss: %.3f '
+                        'r_loss: %.3f '
+                        'o_loss: %.3f) - '
+                        'acc: %.4f         ' % (#epoch+1,self.cfg['epochs'],
+                                       # batch_idx, len(train_loader.dataset)/self.cfg['batch_size'],
+                                        total_loss.item(),
+                                        heatmap_loss.item(),
+                                        bone_loss.item(),
+                                        center_loss.item(),
+                                        regs_loss.item(),
+                                        offset_loss.item(),
+                                        100. * acc),
+                                        end='',flush=True)
+            # break
+        print()
 
 
     def evaluateTest(self, data_loader):
         self.model.eval()
-
+        
         correct = 0
         total = 0
         with torch.no_grad():

@@ -54,6 +54,8 @@ cfg = {
     #"../data/testimg"
     'exam_label_path':'../data/all/data_all_new.json',
 
-    'eval_img_path':'../data/eval/imgs',
-    'eval_label_path':'../data/eval/mypc.json',
+    # 'eval_img_path':'../data/eval/imgs',
+    # 'eval_label_path':'../data/eval/mypc.json',
+    'eval_img_path':'./data/cropped/imgs',
+    'eval_label_path':'./data/cropped/val2017.json',
     }

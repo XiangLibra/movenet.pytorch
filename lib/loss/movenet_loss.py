@@ -43,7 +43,7 @@ class JointBoneLoss(torch.nn.Module):
         return loss
 
 class MovenetLoss(torch.nn.Module):
-    def __init__(self, use_target_weight=False, target_weight=[1]):
+    def __init__(self, use_target_weight=True, target_weight=[1]):
         super(MovenetLoss, self).__init__()
         self.mse = torch.nn.MSELoss(size_average=True)
         self.use_target_weight = use_target_weight
@@ -64,6 +64,7 @@ class MovenetLoss(torch.nn.Module):
         # b
 
         # return torch.mean(torch.abs(pre - target)*kps_mask)
+        
         return torch.sum(torch.abs(pre - target)*kps_mask)/ (kps_mask.sum() + 1e-4)
 
     def l2_loss(self, pre, target):
@@ -109,17 +110,19 @@ class MovenetLoss(torch.nn.Module):
         # b
         loss = torch.pow((pre-target),2)
         # loss = torch.abs(pre-target)
+        if self.use_target_weight: #只要權重為true的話，就計算相關權重
+        # weight_mask = (target+0.1)/1.1
+        
+            weight_mask = target*8+1
+            # weight_mask = torch.pow(target,2)*8+1
 
-        #weight_mask = (target+0.1)/1.1
-        weight_mask = target*8+1
-        # weight_mask = torch.pow(target,2)*8+1
+            #gamma from focal loss
+            # gamma = torch.pow(torch.abs(target-pre), 2)
 
-        #gamma from focal loss
-        #gamma = torch.pow(torch.abs(target-pre), 2)
-
-        loss = loss*weight_mask#*gamma
+            loss = loss*weight_mask#*gamma
 
         loss = torch.sum(loss)/target.shape[0]/target.shape[1]
+        
 
         # bg_loss = self.bgLoss(pre, target)
         return loss
@@ -131,14 +134,14 @@ class MovenetLoss(torch.nn.Module):
         # b
         loss = torch.abs(pre-target)
         
+        if self.use_target_weight: #只要權重為true的話，就計算相關權重
+            # weight_mask = (target+0.1)/1.1
+            weight_mask = target*4+1
 
-        #weight_mask = (target+0.1)/1.1
-        weight_mask = target*4+1
+            #gamma from focal loss
+            #gamma = torch.pow(torch.abs(target-pre), 2)
 
-        #gamma from focal loss
-        #gamma = torch.pow(torch.abs(target-pre), 2)
-
-        loss = loss*weight_mask#*gamma
+            loss = loss*weight_mask#*gamma
 
         loss = torch.sum(loss)/target.shape[0]/target.shape[1]
         return loss
@@ -185,27 +188,33 @@ class MovenetLoss(torch.nn.Module):
         #[64, 7, 48, 48]
         # print(pred.shape, target.shape)
 
-        # heatmaps_pred = pred.reshape((batch_size, pred.shape[1], -1)).split(1, 1)
-        # #对tensor在某一dim维度下，根据指定的大小split_size=int，或者list(int)来分割数据，返回tuple元组
-        # #print(len(heatmaps_pred), heatmaps_pred[0].shape)#7 torch.Size([64, 1, 48*48]
-        # heatmaps_gt = target.reshape((batch_size, pred.shape[1], -1)).split(1, 1)
+        heatmaps_pred = pred.reshape((batch_size, pred.shape[1], -1)).split(1, 1)
+        #对tensor在某一dim维度下，根据指定的大小split_size=int，或者list(int)来分割数据，返回tuple元组
+        #print(len(heatmaps_pred), heatmaps_pred[0].shape)#7 torch.Size([64, 1, 48*48]
+        heatmaps_gt = target.reshape((batch_size, pred.shape[1], -1)).split(1, 1)
 
-        # loss = 0
+        loss = 0
+        for idx in range(pred.shape[1]):
+            heatmap_pred = heatmaps_pred[idx].squeeze()#[64, 40*40]
+            heatmap_gt = heatmaps_gt[idx].squeeze()
 
-        # for idx in range(pred.shape[1]):
-        #     heatmap_pred = heatmaps_pred[idx].squeeze()#[64, 40*40]
-        #     heatmap_gt = heatmaps_gt[idx].squeeze()
-        #     if self.use_target_weight:
-        #         loss += self.centernetfocalLoss(
-        #                         heatmap_pred.mul(self.target_weight[idx//2]),
-        #                         heatmap_gt.mul(self.target_weight[idx//2])
-        #                     )
-        #     else:
+            
 
-        #         loss += self.centernetfocalLoss(heatmap_pred, heatmap_gt)
-        # loss /= pred.shape[1]
+            if self.use_target_weight:
+                # loss += self.centernetfocalLoss(
+                #                 heatmap_pred.mul(self.target_weight[idx//2]),
+                #                 heatmap_gt.mul(self.target_weight[idx//2])
+                #             )
+                loss += self.centernetfocalLoss(heatmap_pred, heatmap_gt)
+            else:
+                return self.myMSEwithWeight(pred,target) 
 
-        return self.myMSEwithWeight(pred,target) 
+                
+        loss /= pred.shape[1]
+
+        return loss/batch_size
+        # torch.sum(loss)/target.shape[0]/target.shape[1]
+        # return self.myMSEwithWeight(pred,target) 
              
 
     def centerLoss(self, pred, target, batch_size):
@@ -349,7 +358,7 @@ class MovenetLoss(torch.nn.Module):
         if not self.make_center_w:
             # self.center_weight = torch.reshape(self.center_weight,(1,1,48,48))
             print(len(self.center_weight))
-            self.center_weight = torch.reshape(self.center_weight,(1,1,64,64))
+            # self.center_weight = torch.reshape(self.center_weight,(1,1,64,64))
             self.center_weight = self.center_weight.repeat((output[1].shape[0],output[1].shape[1],1,1))
             # print(self.center_weight.shape)
             # b
@@ -395,7 +404,7 @@ class MovenetLoss(torch.nn.Module):
 
         return [heatmap_loss,bone_loss,center_loss,regs_loss,offset_loss]
 
-movenetLoss = MovenetLoss(use_target_weight=False)
+movenetLoss = MovenetLoss(use_target_weight=True)
 
 
 def calculate_loss(predict, label):

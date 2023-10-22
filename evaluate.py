@@ -31,7 +31,9 @@ def main(cfg):
     run_task = Task(cfg, model)
 
 
-    run_task.modelLoad("output/e100_valacc0.98349.pth")
+    # run_task.modelLoad("output/e100_valacc0.98349.pth")
+    run_task.modelLoad("e970_valacc0.95294.pth")
+    
     run_task.evaluate(data_loader)
 
 
